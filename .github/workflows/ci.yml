@@ -20,7 +20,13 @@ jobs:
     steps:
       - name: Stop and remove old container (if exists)
         run: |
-          docker ps -q --filter "name=e-learning-container" | grep -q . && docker rm -f e-learning-container || true
+          CONTAINER=$(docker ps -aq --filter "name=e-learning-container")
+          if [ -n "$CONTAINER" ]; then
+            echo "Stopping and removing old container..."
+            docker rm -f $CONTAINER
+          else
+            echo "No existing container to remove."
+          fi
 
       - name: Run container
         run: docker run -d -p 8083:8083 --name e-learning-container e-learning:latest
